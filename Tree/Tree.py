@@ -48,7 +48,7 @@ class Tree(QTreeWidget):
         self.setSuffix(".qss")
         # self.create_file("qds")
         # self.create_file("asd")
-        self.setCloseMouseRight(False)
+        self.setCloseMouseRight(True)
 
     def tree(self)->dict:
         return self.__structure_tree
@@ -201,6 +201,8 @@ class Tree(QTreeWidget):
             return
 
         file_name = self.currentItem.text(0)
+        if self.suffix in file_name: # 判断是否是文件
+            file_name = self.fullPath(self.currentItem)+"/"+file_name
         # 顶级目录
         if self.currentItem.parent() is None:
             if self.suffix in file_name: # 如果是.qss文件
@@ -241,6 +243,17 @@ class Tree(QTreeWidget):
             self.delefile.emit(file_name)
         print(self.tree())
 
+    # 完整路径
+    def fullPath(self,item:QTreeWidgetItem):
+        if self.currentItem is None:
+            return ""
+        else:
+            path_list = self.right_path(item)
+            # 判断是否为顶级文件xx.qss
+            if len(path_list) == 1 and self.suffix in path_list[0]:
+                return ""
+            return "/".join(path_list)
+
     # 新建文件
     def create_file(self,file_name:str):
         # 文件名
@@ -259,6 +272,8 @@ class Tree(QTreeWidget):
         item = QTreeWidgetItem(temp_item)
         item.setText(0, qss_name)
         self.addTopLevelItem(item)
+
+        qss_name = self.fullPath(item) + "/" + qss_name
 
         if temp_item is self:
             if not self.tree().get("default", None):
