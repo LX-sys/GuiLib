@@ -5,6 +5,7 @@
 # @software:PyCharm
 
 import copy
+import re
 import sys,os
 from PyQt5 import QtGui
 from PyQt5.QtCore import QPoint, Qt, pyqtSignal, QSize, QModelIndex
@@ -125,11 +126,15 @@ class Tree(QTreeWidget):
             folder
         :return:
         '''
+        print("---判断",self.currentItem,name)
         if self.currentItem is None:
             if self.tree().get("default") is None:
                 return False
             else:
                 f_list = self.tree()["default"]
+                # 判断当前name是否为纯 xx.qss
+                if re.findall("^[a-zA-Z0-9]*{}".format(self.suffix),name):
+                    name="/"+name
                 if name in f_list:
                     return True
                 else:
@@ -403,10 +408,11 @@ class Tree(QTreeWidget):
     def doubleClickedEvent(self, index: QModelIndex):
         # 双击对qss文件有效
         text = index.data()
+        full_path = self.fullPath(self.currentItem)+"/"+text
         if self.suffix in text:
             print(text)
-            # 发送信息
-            self.filenameedit.emit(text)
+            # 发送完整路径
+            self.filenameedit.emit(full_path)
 
     # 单机节点事件
     def clickEvent(self, item, column):
