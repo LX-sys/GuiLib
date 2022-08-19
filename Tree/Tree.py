@@ -126,7 +126,6 @@ class Tree(QTreeWidget):
             folder
         :return:
         '''
-        print("---判断",self.currentItem,name)
         if self.currentItem is None:
             if self.tree().get("default") is None:
                 return False
@@ -153,6 +152,11 @@ class Tree(QTreeWidget):
     # 鼠标右键创建文件夹(鼠标右键)
     def create_folder_right(self):
         text, ok = QInputDialog.getText(self, '创建文件夹', '请输入文件夹名称:')
+
+        if not text:
+            # 请输入文件夹名称
+            QMessageBox.warning(self, "警告", "文件夹名称不能为空")
+            return # 如果没有输入文件名称，则直接返回
 
         if self.__is_have_file(text, "folder"):
             QMessageBox.warning(self, "警告", "文件夹已存在")
@@ -261,6 +265,11 @@ class Tree(QTreeWidget):
 
     # 新建文件
     def create_file(self,file_name:str):
+        if not file_name:
+            # 请输入文件名称
+            QMessageBox.warning(self, "警告", "文件名称不能为空")
+            return # 如果没有输入文件名称，则直接返回
+
         # 文件名
         qss_name = file_name + self.suffix
 
