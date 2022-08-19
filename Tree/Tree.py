@@ -23,6 +23,7 @@ class Tree(QTreeWidget):
     filenameedit = pyqtSignal(str)  # 双击文件事情,发送文件名时间
     rightClicked = pyqtSignal()  # 鼠标右键信号
     rightClickFile = pyqtSignal(str)  # 鼠标右键信号,带文件名
+    leftClicked = pyqtSignal(QTreeWidgetItem)  # 左键信号
     delefolder = pyqtSignal(str)  # 删除文件夹信号
     delefile = pyqtSignal(str)   #  删除文件信号
 
@@ -194,6 +195,9 @@ class Tree(QTreeWidget):
     def setCloseMouseRight(self,close:bool):
         self.right_menu_createfile_bool = close
 
+    def closeMouseRight(self)->bool:
+        return self.right_menu_createfile_bool
+
     # 新建文件(鼠标右键)
     def create_file_right(self):
         if self.right_menu_createfile_bool:
@@ -310,6 +314,7 @@ class Tree(QTreeWidget):
         # 发送信号
         self.rightClickFile.emit(qss_name)
         print(self.tree())
+        return True
 
     # 鼠标右键的路径
     def right_path(self,currentItem:QTreeWidgetItem)->list:
@@ -426,6 +431,8 @@ class Tree(QTreeWidget):
     # 单机节点事件
     def clickEvent(self, item, column):
         self.currentItem = item
+        # 发现左键信号
+        self.leftClicked.emit(item)
 
     # 获取所有文件的名称(有bug)
     def get_all_file_name(self,tree=None)->list:
